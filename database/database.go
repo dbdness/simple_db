@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/boltdb/bolt"
 )
@@ -15,11 +14,7 @@ var db *bolt.DB
 var bucketName = []byte("database")
 
 func init() {
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Panic()
-	}
-	open(wd)
+	open("database.db")
 
 }
 
@@ -29,19 +24,17 @@ func open(path string) {
 	var err error
 	db, err = bolt.Open(path, 0640, nil)
 	if err != nil {
-		log.Panic()
+		log.Fatal(err)
 	}
 	err = db.Update(func(tx *bolt.Tx) error {
 		_, err = tx.CreateBucketIfNotExists(bucketName)
-		fmt.Println("--No previous database found. A new one is created instead--")
 		return err
 
 	})
 	if err != nil {
-		log.Panic()
+		log.Fatal(err)
 	}
 
-	fmt.Println("--Database is successfully opened--")
 }
 
 //Put puts stores a specified value along with the specified key in the BoltDB bucket.
@@ -81,7 +74,9 @@ func Get(key string) error {
 		decoder := gob.NewDecoder(bytes.NewReader(v))
 		var value string
 		//Stores the decoded value in a string.
-		return decoder.Decode(&value)
+		decoder.Decode(&value)
+		fmt.Println(value)
+		return nil
 
 	})
 
