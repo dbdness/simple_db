@@ -84,7 +84,7 @@ func Get(key string) error {
 
 //Delete deletes the entry with the specified key, if it exists.
 func Delete(key string) error {
-	return db.View(func(tx *bolt.Tx) error {
+	return db.Update(func(tx *bolt.Tx) error {
 		cursor := tx.Bucket(bucketName).Cursor()
 		//Seeks the Bucket with a cursor.
 		k, _ := cursor.Seek([]byte(key))
@@ -93,7 +93,6 @@ func Delete(key string) error {
 			return nil
 		}
 
-		fmt.Println("--Entry successfully deleted--")
 		return cursor.Delete()
 
 	})

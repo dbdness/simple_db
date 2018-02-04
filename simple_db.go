@@ -24,6 +24,9 @@ func main() {
 		fmt.Println("---Key and value successfully stored---")
 	case "--get":
 		database.Get(os.Args[2])
+	case "--delete":
+		database.Delete(os.Args[2])
+		fmt.Println("--Entry successfully deleted--")
 	default:
 		fmt.Println("unknown command: '" + usercommand + "'")
 		printUsage()
@@ -34,5 +37,5 @@ func main() {
 }
 
 func printUsage() {
-	fmt.Println("usage: 	./simple_db [--set <key> <value>] [--get <value>]")
+	fmt.Println("usage: 	./simple_db [--set <key> <value>] [--get <value>] [--delete <key>]")
 }
