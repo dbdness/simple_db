@@ -1,21 +1,38 @@
 package database
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/boltdb/bolt"
 )
 
+var db *bolt.DB
+
+var bucketName = []byte("database")
+
+func init() {
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Panic()
+	}
+	open(wd)
+
+}
+
 //Open opens our key-value store instance hosted by BoltDB.
 //path is the full path to the database file to be opened. The method will create a file if it doesn't exist.
-func Open(path string) {
-	db, err := bolt.Open(path, 0640, nil)
+func open(path string) {
+	var err error
+	db, err = bolt.Open(path, 0640, nil)
 	if err != nil {
 		log.Panic()
 	}
 	err = db.Update(func(tx *bolt.Tx) error {
-		_, err = tx.CreateBucketIfNotExists([]byte("database"))
+		_, err = tx.CreateBucketIfNotExists(bucketName)
 		fmt.Println("--No previous database found. A new one is created instead--")
 		return err
 
@@ -25,4 +42,41 @@ func Open(path string) {
 	}
 
 	fmt.Println("--Database is successfully opened--")
+}
+
+//Put puts stores a specified value along with the specified key in the BoltDB bucket.
+func Put(key string, value string) error {
+	if key == nil || value == nil {
+		log.Panic("Values cannot be null.")
+	}
+
+	//Encoding the value using a buffer.
+	var buf bytes.Buffer
+	err := gob.NewEncoder(&buf).Encode(value)
+	if err != nil {
+		return nil
+	}
+
+	//Putting the encoded value next to the key in the bucket.
+	return db.Update(func(tx *bolt.Tx) error {
+		err := tx.Bucket(bucketName).Put([]byte(key), buf.Bytes())
+		return err
+
+	})
+
+}
+
+//Get gets the value from the specified key.
+//Returns an error if one occurs, returns the decoded value otherwise.
+func Get(key string) error {
+	return db.View(func(tx *bolt.Tx) error {
+		cursor := tx.Bucket(bucketName).Cursor()
+		k, v := cursor.Seek([]byte(key))
+		if k == nil || string(k) != key {
+			log.Panic("Key not found in the database.")
+
+		}
+
+	})
+
 }
