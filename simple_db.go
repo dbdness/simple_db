@@ -9,6 +9,9 @@ import (
 )
 
 func main() {
+	//Closes the database file after all code has run.
+	defer database.Close()
+
 	usercommand := os.Args[1]
 	if usercommand == "" {
 		log.Panic("No arguments given.")
@@ -16,11 +19,20 @@ func main() {
 	}
 
 	switch usercommand {
-	case "set":
+	case "--set":
 		database.Put(os.Args[2], os.Args[3])
 		fmt.Println("---Key and value successfully stored---")
-	case "get":
+	case "--get":
 		database.Get(os.Args[2])
+	default:
+		fmt.Println("unknown command: '" + usercommand + "'")
+		printUsage()
 	}
 
+	database.Close()
+
+}
+
+func printUsage() {
+	fmt.Println("usage: 	./simple_db [--set <key> <value>] [--get <value>]")
 }

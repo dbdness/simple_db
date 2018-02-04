@@ -40,7 +40,7 @@ func open(path string) {
 //Put puts stores a specified value along with the specified key in the BoltDB bucket.
 func Put(key string, value string) error {
 	if key == "" || value == "" {
-		log.Panic("Values cannot be null.")
+		log.Fatal("Values cannot be null.")
 	}
 
 	//Encoding the value using a buffer.
@@ -67,7 +67,7 @@ func Get(key string) error {
 		//Seeks the Bucket with a cursor.
 		k, v := cursor.Seek([]byte(key))
 		if k == nil || string(k) != key {
-			log.Panic("Key not found in the database.")
+			log.Fatal("Key not found in the database.")
 			return nil
 		}
 
@@ -80,4 +80,27 @@ func Get(key string) error {
 
 	})
 
+}
+
+//Delete deletes the entry with the specified key, if it exists.
+func Delete(key string) error {
+	return db.View(func(tx *bolt.Tx) error {
+		cursor := tx.Bucket(bucketName).Cursor()
+		//Seeks the Bucket with a cursor.
+		k, _ := cursor.Seek([]byte(key))
+		if k == nil || string(k) != key {
+			log.Fatal("Key not found in the database.")
+			return nil
+		}
+
+		fmt.Println("--Entry successfully deleted--")
+		return cursor.Delete()
+
+	})
+
+}
+
+//Close closes the database file.
+func Close() error {
+	return db.Close()
 }
