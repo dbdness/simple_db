@@ -34,25 +34,31 @@ If you're using Windows, it's recommended to run the program with the [Git Bash]
    ```````
 
 
-2. Build the project:
+2. CD into the project folder:
+
+   ```bash
+   $ cd simple_db/
+   ```
+
+3. Build the project:
 
    ```bash
    $ go build
    ```
 
-3. Place a value along with a key in the database using the `--set` command and its values. The first argument after the command is the key, the other is the value:
+4. Place a value along with a key in the database using the `--set` command and its values. The first argument after the command is the key, the other is the value:
 
    ```bash
    $ ./simple_db --set 1 Test
    ```
 
-4. Retrieve the value of the key you've just placed in the database, by using the `—-get` command:
+5. Retrieve the value of the key you've just placed in the database, by using the `—-get` command:
 
    ``` bash
    $ ./simple_db --get 1
    ```
 
-5. To delete a key-value pair, use the `—-delete` command along with the key of the entry you want to delete:
+6. To delete a key-value pair, use the `—-delete` command along with the key of the entry you want to delete:
 
    ```bash
    $ ./simple_db --delete 1
