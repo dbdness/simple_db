@@ -51,6 +51,7 @@ If you're using Windows, it's recommended to run the program with the [Git Bash]
    ```bash
    $ ./simple_db --set 1 Test
    ```
+   It's also possible to update a given value after it's stored. Simply run the `—-set`  command again on a stored key, but with a new value.
 
 5. Retrieve the value of the key you've just placed in the database, by using the `—-get` command:
 
